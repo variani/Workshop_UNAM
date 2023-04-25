@@ -2,7 +2,7 @@
 
 Download the large files from Dropbox:
 
-* `sim_rels_geno.bed`: [Dropbox](https://www.dropbox.com/s/umubc70efejitlb/sim_rels_geno.bed?dl=0).
+* `sim_rels_geno.bed`: [Dropbox](https://www.dropbox.com/s/umubc70efejitlb/sim_rels_geno.bed?dl=0)
 
 ## Simulated Dataset 1
 
@@ -15,4 +15,4 @@ data/
 └── sim_rels_pheno.txt
 ```
 
-- download `sim_rels_geno.bed`: [Dropbox](https://www.dropbox.com/s/umubc70efejitlb/sim_rels_geno.bed?dl=0).
+- download `sim_rels_geno.bed` from [Dropbox](https://www.dropbox.com/s/umubc70efejitlb/sim_rels_geno.bed?dl=0)
