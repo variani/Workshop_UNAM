@@ -2,7 +2,7 @@ packages = c(
   # data analysis
   'tidyverse', 'glue', 'data.table',
   # genetic data analysis
-  'qqman', 'BEDMatrix',
+  'qqman', 'BEDMatrix', 'bigsnpr',
   # rare-variant association analysis
   'SKAT', 'ACAT'
 )
