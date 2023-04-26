@@ -1,6 +1,6 @@
 packages = c(
   # data analysis
-  'tidyverse', 'data.table',
+  'tidyverse', 'glue', 'data.table',
   # genetic data analysis
   'qqman', 'BEDMatrix',
   # rare-variant association analysis
