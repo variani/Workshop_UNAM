@@ -4,7 +4,9 @@ packages = c(
   # genetic data analysis
   'qqman', 'BEDMatrix', 'bigsnpr',
   # rare-variant association analysis
-  'SKAT', 'ACAT'
+  'SKAT', 'ACAT',
+  # misc
+  'hexbin'
 )
 
 is_installed = function(p) nzchar(system.file(package = p))

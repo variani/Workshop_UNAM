@@ -10,16 +10,17 @@ library(ACAT)
 
 ## Define paths to data files/tools
 # - helpful R commands: getwd(), list.files(), file.exists()
-DIR_DATA = 'data/' # or simple '.'
+DIR_MAIN = '~/git/variani/UNAM2023_Association_Mapping/'
+DIR_DATA = glue('{DIR_MAIN}/data/')
 D1_BFILE = glue('{DIR_DATA}/rv_geno_chr1')
 D1_PHENO = glue('{DIR_DATA}/rv_pheno.txt')
 
-PLINK = 'plink2'
+DIR_TOOLS = glue('{DIR_MAIN}/tools/')
+PLINK = glue('{DIR_TOOLS}/plink2')
 
 # Q1: Extract a subset of rare markers and store a new dataset
-val_maf_max = NULL # put the value of maxium of MAF
 cmd = glue(" {PLINK} --bfile {D1_BFILE} ",
-    " --max-maf {val_maf_max} --maj-ref force ",
+    " --max-maf 0.01 --maj-ref force ",
     " --make-bed --out rv_geno_chr1_subset ")
 system(cmd)
 
@@ -38,11 +39,7 @@ G = as.matrix(g)
 
 str(G)
 
-# Hint: apply colMeas function to G and specify the argument na.rm = TRUE
-# - Recall the MAF formula: sum(g) / (2*N) = mean(g) / 2
-
-# write your code to compute MAF of all columns in G 
-mafs = NULL
+mafs = colMeans(G, na.rm = TRUE) / 2
 range(mafs) 
 
 macs = colSums(G, na.rm = TRUE)
@@ -62,8 +59,7 @@ cmd = glue(" {PLINK} --bfile rv_geno_chr1_subset ",
 system(cmd)
 
 ## read association results
-f_assoc = NULL # put the path to output file from Plink here
-assoc_plink = fread(f_assoc) %>% as_tibble
+assoc_plink = fread('gwas_sv.Pheno.glm.linear') %>% as_tibble
 str(assoc_plink)
 
 ## plot effect size vs -log10(p)
@@ -74,7 +70,7 @@ ggplot(assoc_plink, aes(BETA, -log10(P))) + geom_point() +
 
 # build a burden score
 wts = dbeta(mafs, 1, 25)
-burden = G * wts # that is the column-wise multiplication in R
+burden = G * wts
 burden[1:5, 1:3]
 
 # statistics on the burden score
@@ -92,14 +88,12 @@ null_skat = SKAT_Null_Model(phen$Pheno ~ 1 , out_type = "C")
 res_skat = SKAT(G, null_skat)
 str(res_skat)
 
-# rho = 1 --> SKAT-O -> ?
-val_rho = NULL # put the rho value here
-res_skat_rho1 = SKAT(G, null_skat, r.corr = val_rho)
+# rho = 1 --> SKAT-O = burden
+res_skat_rho1 = SKAT(G, null_skat, r.corr = 1)
 res_skat_rho1$p.value
 
-# rho = 0 --> SKAT-O -> ?
-val_rho = NULL # put the rho value here
-res_skat_rho1 = SKAT(G, null_skat, r.corr = val_rho)
+# rho = 0 --> SKAT-O = SKAT or variance component test
+res_skat_rho1 = SKAT(G, null_skat, r.corr = 0)
 res_skat_rho1$p.value
 
 # optimal rho

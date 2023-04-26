@@ -10,11 +10,14 @@ library(hexbin)
 
 ## Define paths to data files/tools
 # - helpful R commands: getwd(), list.files(), file.exists()
-DIR_DATA = 'data/'
+DIR_MAIN = '~/git/variani/UNAM2023_Association_Mapping/'
+
+DIR_DATA = glue('{DIR_MAIN}/data/')
 D1_BFILE = glue('{DIR_DATA}/YRI_CEU_ASW_MEX_NAM')
 D1_LABS = glue('{DIR_DATA}/Population_Sample_Info.txt')
 
-PLINK = 'plink2'
+DIR_TOOLS = glue('{DIR_MAIN}/tools/')
+PLINK = glue('{DIR_TOOLS}/plink2')
 
 # Q1. Explore the dataset from the 1,000 Genomes Project + (Ingideneous people in the Americas; NAM) the Human Genome Diversity Project
 # https://www.coriell.org/1/NHGRI/Collections/1000-Genomes-Project-Collection/1000-Genomes-Project
@@ -41,15 +44,17 @@ cmd = glue(" {PLINK} --bfile {D1_BFILE} ",
 system(cmd)
 
 # scatterplot of PC1 vs PC2
-f_eigenvec = NULL # put the path to output file with PCs here
-pcs = fread(f_eigenvec) 
+pcs = fread('pca_plink.eigenvec') 
 pcs = full_join(pcs, labs, by = 'IID')
 
 ggplot(pcs, aes(PC1, PC2)) + geom_point(aes(color = Population))
 
+ggplot(pcs, aes(PC3, PC4)) + geom_point(aes(color = Population))
+
+ggplot(pcs, aes(PC9, PC10)) + geom_point(aes(color = Population))
+
 # variance captured by PCs
-f_eigenval = NULL # put the path to output fle with eigen values here
-evals = read_lines(f_eigenvec) %>% as.numeric
+evals = read_lines('pca_plink.eigenval') %>% as.numeric
 prop = evals / sum(evals)
 
 ## Q3. Repeat the PCA using bigsnpr computing 10 PCs. 
@@ -58,9 +63,7 @@ prop = evals / sum(evals)
 # - Check the loading plots. What special patterns for the later PCs? Is that reflected in the PC9 vs PC10 plot?
 bedfile = glue('{D1_BFILE}.bed')
 bed = bed(bedfile)
-val_thr = NULL # put some value here
-val_mac = NULL # put some value here
-pca = bed_autoSVD(bed, thr.r2 = val_thr, min.mac = val_mac, k = 10)
+pca = bed_autoSVD(bed, thr.r2 = 0.2, min.mac = 20, k = 10)
 
 # plot PC1 vs PC2
 plot(pca, type = "scores", scores = 1:2) + aes(color = labs$Population)
